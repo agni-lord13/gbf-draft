@@ -1,0 +1,380 @@
+html,
+body {
+  height: 100%;
+  max-height: 100%;
+}
+
+.draft-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+$header-height: 0.1;
+$footer-height: 0.05;
+#draft-header {
+  flex-grow: 0;
+  padding: 0.3em;
+  background-color: #eaecf0;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+#draft-control {
+  box-sizing: border-box;
+  flex-grow: 1;
+  min-height: percentage(1 -$header-height - $footer-height);
+}
+
+.draft-footer {
+  background-color: pink;
+  font-size: 0.8em;
+}
+
+#draft-order {
+  width: 25%;
+  overflow: auto;
+}
+
+#welcomeModal {
+  .progress {
+    height: 5vh;
+  }
+}
+
+#fetchProgress .progress-bar {
+  background-color: #0ba8e6;
+}
+
+#buildProgress .progress-bar {
+  background-color: #f091ad;
+}
+
+$header-font-size: 1.5em;
+
+#draft-actions {
+  background-color: black;
+  color: white;
+  width: 15%;
+  text-align: center;
+  padding-top: 0.8em;
+
+  #currentRound {
+    font-size: $header-font-size;
+  }
+
+  #currentTeam {
+    font-size: 1.1em;
+  }
+
+  #btnActions {
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+  }
+
+  button {
+    color: white;
+    font-weight: bold;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+#draft-pool {
+  width: 60%;
+  background-color: lightgray;
+}
+
+.round-header {
+  font-weight: bold;
+  background-color: lightskyblue;
+  text-align: center;
+  font-size: $header-font-size;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.pick-order {
+  //background-color: yellow;
+  background-color: lightgrey;
+  box-sizing: border-box;
+  //border-bottom: 0.1em solid black;
+  //border-right: 0.1em solid grey;
+  padding-left: 0.3em;
+  padding-right: 0.3em;
+  justify-content: center;
+
+  .pick-label {
+    font-size: 0.8em;
+  }
+
+  .pick-id {
+    font-weight: bold;
+  }
+}
+
+.pick-view {
+  //.pick-info {
+  box-sizing: border-box;
+
+  .team {
+    flex-grow: 1;
+    padding-left: 0.5em;
+    align-items: center;
+  }
+
+  &.current .team {
+    background-color: black;
+    color: white;
+    font-weight: bold;
+  }
+
+  $view-padding: 0.5em;
+
+  .char-select {
+    position: relative;
+    box-sizing: border-box;
+
+    width: 32%;
+
+    padding: 0.3em;
+
+    //border-left: 0.1em solid grey;
+    justify-content: center;
+    align-items: center;
+    background-color: lightgrey;
+
+    .img-wrapper {
+      position: relative;
+    }
+
+    img {
+      visibility: hidden;
+      height: auto;
+      width: 100%;
+    }
+
+    .selection-info {
+      visibility: hidden;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      user-select: none;
+      font-size: 0.8vw;
+    }
+  }
+
+  &[data-char-select] {
+    img {
+      visibility: visible;
+    }
+
+    &.traded {
+      img {
+        opacity: 0.3;
+      }
+
+      .selection-info {
+        visibility: visible;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+$draft-search-filter-size: 10%;
+#draft-search-filter {
+  padding: 0.2em;
+  background-color: lightskyblue;
+  align-items: center;
+
+  .left-controls {
+    column-gap: 0.5em;
+  }
+
+  .right-controls {
+    column-gap: 0.5em;
+  }
+}
+
+#draft-selections {
+  justify-content: center;
+  align-items: flex-start;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  gap: 0.2em;
+  padding: 0.2em;
+
+  .character-select {
+    position: relative;
+    background-color: lightskyblue;
+    border-width: 0.2em;
+    border-style: solid;
+    border-color: transparent;
+    width: 12%;
+
+    &.char-lock {
+      background-color: grey;
+
+      img {
+        opacity: 0.3;
+      }
+    }
+
+    img {
+      width: 100%;
+    }
+
+    .selection-info {
+      font-weight: bold;
+      font-size: 0.8vw;
+      color: white;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      visibility: hidden;
+      user-select: none;
+    }
+
+    &[data-team-current] {
+      img {
+        opacity: 0.3;
+      }
+
+      .selection-info {
+        visibility: visible;
+      }
+    }
+
+    &[data-placeholder] {
+      visibility: hidden;
+    }
+  }
+
+  &.team-view {
+    .character-select {
+      .selection-info {
+        visibility: hidden;
+      }
+
+      img {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.confirm-info {
+  font-weight: bold;
+}
+
+.filtered {
+  display: none;
+}
+
+#filter-modal .row:not(:last-of-type) {
+  padding-bottom: 0.4em;
+}
+
+#seriesControl {
+  gap: 0.2em;
+}
+
+@mixin trade-list-view($p-color) {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  height: 45vh;
+  background-color: $p-color;
+}
+
+.trade-options {
+  @include trade-list-view(lightskyblue);
+}
+
+.trade-offers {
+  @include trade-list-view(pink);
+}
+
+#tradeModal {
+  @for $i from 1 through 13 {
+    .col-#{$i} {
+      width: percentage($i / 13);
+    }
+  }
+
+  .row:not(:last-of-type) {
+    padding-bottom: 0.3em;
+  }
+}
+
+$trade-color: pink;
+
+.trade-asset {
+  &[data-trade-offer] {
+    background-color: $trade-color;
+    font-weight: bold;
+  }
+}
+
+#team-list-wrapper {
+  background-color: lightgrey;
+  height: 16vh;
+  padding: 0.3em;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+
+  #team-list {
+    gap: 0.3em;
+
+    .team-name-option {
+      background-color: lightskyblue;
+      font-size: 1.1em;
+      border-radius: 25px;
+      font-weight: bold;
+      padding-left: 0.3em;
+      padding-right: 0.3em;
+
+      .delete-name {
+        padding-left: 0.3em;
+        color: white;
+        cursor: pointer;
+
+        &:hover {
+          color: grey;
+        }
+      }
+    }
+  }
+}
+
+#teamOrderSetup {
+  background-color: lightgrey;
+
+  &.ui-sortable-disabled {
+    .team-name-order {
+      opacity: 0.65;
+    }
+  }
+}
+
+@media (hover: none), (any-hover: none) {
+  .btn-check:not(:checked) + .btn-outline-primary,
+  .btn-check:not(:checked) + .btn-outline-primary:active,
+  .btn-check:not(:checked) + .btn-outline-primary:focus {
+    background-color: inherit !important;
+    color: var(--bs-primary) !important;
+    box-shadow: inherit !important;
+  }
+}
+.btn-check:not(:checked) + .btn-outline-primary,
+.btn-check:not(:checked) + .btn-outline-primary:active,
+.btn-check:not(:checked) + .btn-outline-primary:focus {
+  box-shadow: inherit !important; /* Properly reset btn-check box shadow on desktop. */
+}

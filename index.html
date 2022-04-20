@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <title>Granblue Fantasy Draft</title>
+      <link
+         href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+         rel="stylesheet">
+      <link rel="stylesheet"
+         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+         <link rel="stylesheet" type="text/css" href="styles/gbf.css"  />
+      <script
+         src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+      <script
+         src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+      <script type='text/javascript' src='scripts/granblue-data.js'></script>
+      <script type='text/javascript' src='scripts/granblue-draft.js'></script>
+   </head>
+   <body>
+      <div class="draft-container">
+         <header
+            class="d-flex align-items-center justify-content-between d-none"
+            id="draft-header">
+            <h3>Granblue Fantasy Draft</h3>
+         </header>
+         <div class="d-flex" id="draft-control">
+            <div class="d-flex flex-column" id="draft-order">
+               <header class="round-header">Round</header>
+            </div>
+            <div class="d-flex flex-column" id="draft-actions">
+               <div class="fw-bold" id="currentRound">Round</div>
+               <div class="fw-bold" id="currentPick">Pick</div>
+               <div class="fw-bold" id="currentTeam"></div>
+               <div id="draftStatus"></div>
+               <div class="d-flex flex-column flex-grow-1" id="btnActions">
+                  <button type="button"
+                     class="d-flex flex-column btn btn-default btn-lg" id="tradeBtn">
+                  Trade <i class="bi bi-arrow-left-right"></i>
+                  </button>
+                  <button type="button"
+                     class="d-flex flex-column btn btn-default btn-lg"
+                     id="resetDraftBtn">
+                  Reset <i class="bi bi-arrow-clockwise"></i>
+                  </button>
+               </div>
+            </div>
+            <div class="d-flex flex-column" id="draft-pool">
+               <div class="d-flex justify-content-between" id="draft-search-filter">
+                  <div class="d-flex flex-grow-0 align-items-center left-controls">
+                     <div>
+                        <select class="form-select form-select-sm" id="viewModeSelect">
+                           <option value="0" selected>Pick Crew Members</option>
+                        </select>
+                     </div>
+                     <div class="form-check form-switch" id="select-mode-container">
+                        <input class="form-check-input" type="checkbox" role="switch"
+                           id="selectionModeSwtch" checked /> <label
+                           class="form-check-label" for="selectionModeSwtch">Hide
+                        Selections</label>
+                     </div>
+                     <div class="form-check form-switch" id="verify-setting">
+                        <input class="form-check-input" type="checkbox" role="switch"
+                           id="pickVerifySwtch" checked /> <label class="form-check-label"
+                           for="pickVerifySwtch">Confirm</label>
+                     </div>
+                  </div>
+                  <div id="charRestrictModeAlert" class="fw-bold d-none">Character
+                     Restriction Mode
+                  </div>
+                  <div class="d-flex align-items-center right-controls">
+                     <button type="button" class="btn btn-primary btn-sm"
+                        data-bs-toggle="modal" id="filterBtn"
+                        data-bs-target="#filter-modal">
+                     Filter <span class="badge bg-warning text-dark"
+                        id="filterCountWarn"></span>
+                     </button>
+                     <div id="charactersSort">
+                        <select class="form-select form-select-sm">
+                           <option value="alph-asc">Alphabetical (Asc.)</option>
+                           <option value="alph-desc">Alphabetical (Desc.)</option>
+                           <option value="earliest">Release Date (Earliest)</option>
+                           <option value="latest" selected>Release Date (Latest)</option>
+                           <option value="pick-asc">Pick Order (Asc.)</option>
+                           <option value="pick-desc">Pick Order (Desc.)</option>
+                        </select>
+                     </div>
+                  </div>
+               </div>
+               <div class="d-flex flex-wrap" id="draft-selections"></div>
+               <div class="modal fade " data-bs-backdrop="static" tabindex="-1"
+                  id="verify-pick-modal">
+                  <div class="modal-dialog modal-dialog-centered">
+                     <div class="modal-content">
+                        <div class="modal-header">
+                           <h3 class="modal-title">Confirm Selection</h3>
+                        </div>
+                        <div class="modal-body">
+                           <p>
+                              With the <span class="confirm-info" id="confirm-pick-order"></span>
+                              pick of the Granblue Fantasy Draft, the crew <span
+                                 class="confirm-info" id="confirm-pick-team"></span> selects <span
+                                 class="confirm-info" id="confirm-pick-character"></span>.
+                           </p>
+                        </div>
+                        <div class="modal-footer">
+                           <button type="button" class="btn btn-secondary"
+                              data-bs-dismiss="modal" id="cancel-pick-btn">Cancel</button>
+                           <button type="button" class="btn btn-primary"
+                              data-bs-dismiss="modal" id="confirm-pick-btn">Confirm</button>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div class="modal fade" tabindex="-1" id="filter-modal">
+                  <div
+                     class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                     <div class="modal-content">
+                        <div class="modal-header">
+                           <h3 class="modal-title align-items-center">Filter</h3>
+                           <button type="button" class="btn btn-secondary"
+                              id="clearFiltersBtn">Clear</button>
+                        </div>
+                        <div class="modal-body">
+                           <div class="container-fluid">
+                              <div class="row">
+                                 <div
+                                    class="col-12 d-flex flex-grow-1 justify-content-center form-check form-switch"
+                                    id="seriesControl">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                       id="filterCollab" checked /> <label
+                                       class="form-check-label" for="filterCollab"> Include
+                                    Crossovers</label>
+                                 </div>
+                              </div>
+                              <div class="row">
+                                 <div class="col-6 d-flex flex-grow-1 flex-column">
+                                    <div class="d-flex justify-content-center">
+                                       <h5>Gender</h5>
+                                    </div>
+                                    <div
+                                       class="btn-group btn-group d-flex flex-grow-1 justify-content-center"
+                                       role="group" aria-label="Filter by Gender">
+                                       <input type="checkbox" class="btn-check filter-gender"
+                                          id="gender-male" value="m" autocomplete="off"> <label
+                                          class="btn btn-outline-primary " for="gender-male">Male</label>
+                                       <input type="checkbox" class="btn-check filter-gender"
+                                          id="gender-female" value="f" autocomplete="off"> <label
+                                          class="btn btn-outline-primary " for="gender-female">Female</label>
+                                       <input type="checkbox" class="btn-check filter-gender"
+                                          id="gender-other" value="o" autocomplete=" off"> <label
+                                          class="btn btn-outline-primary " for="gender-other">Other</label>
+                                    </div>
+                                 </div>
+                                 <div class="col-1"></div>
+                                 <div class="col-5 d-flex flex-column">
+                                    <div class="d-flex flex-grow-1 justify-content-center">
+                                       <h5>Rarity</h5>
+                                    </div>
+                                    <div class="btn-group btn-group d-flex flex-grow-1"
+                                       role="group" aria-label="Select rarity">
+                                       <input type="checkbox" class="btn-check filter-rarity"
+                                          id="rarity-r" value="R" autocomplete="off"> <label
+                                          class="btn btn-outline-primary" for="rarity-r">R</label> <input
+                                          type="checkbox" class="btn-check filter-rarity"
+                                          id="rarity-sr" value="SR" autocomplete="off"> <label
+                                          class="btn btn-outline-primary " for="rarity-sr">SR</label>
+                                       <input type="checkbox" class="btn-check filter-rarity"
+                                          id="rarity-ssr" value="SSR" autocomplete="off"> <label
+                                          class="btn btn-outline-primary" for="rarity-ssr">SSR</label>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="row">
+                                 <div class="col-12 d-flex-column">
+                                    <div class="d-flex flex-grow justify-content-center">
+                                       <h5>Race</h5>
+                                    </div>
+                                    <div class="btn-group btn-group d-flex flex-grow-1"
+                                       role="group" aria-label="Filter by Element">
+                                       <input type="checkbox" class="btn-check filter-race"
+                                          id="race-human" value="Human" autocomplete="off"> <label
+                                          class="btn btn-outline-primary " for="race-human">Human</label>
+                                       <input type="checkbox" class="btn-check filter-race"
+                                          id="race-erune" value="Erune" autocomplete="off"> <label
+                                          class="btn btn-outline-primary " for="race-erune">Erune</label>
+                                       <input type="checkbox" class="btn-check filter-race"
+                                          id="race-draph" value="Draph" autocomplete="off"> <label
+                                          class="btn btn-outline-primary " for="race-draph">Draph</label>
+                                       <input type="checkbox" class="btn-check filter-race"
+                                          id="race-harvin" value="Harvin" autocomplete="off">
+                                       <label class="btn btn-outline-primary " for="race-harvin">Harvin</label>
+                                       <input type="checkbox" class="btn-check filter-race"
+                                          id="race-primal" value="Primal" autocomplete="off">
+                                       <label class="btn btn-outline-primary " for="race-primal">Primal</label>
+                                       <input type="checkbox" class="btn-check filter-race"
+                                          id="race-other" value="Other" autocomplete="off"> <label
+                                          class="btn btn-outline-primary " for="race-other">Other</label>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="row">
+                                 <div class="col-12 d-flex-column">
+                                    <div class="d-flex flex-grow justify-content-center">
+                                       <h5>Elements</h5>
+                                    </div>
+                                    <div class="btn-group btn-group d-flex flex-grow-1"
+                                       role="group" aria-label="Filter by Element">
+                                       <input type="checkbox" class="btn-check filter-element"
+                                          id="element-fire" value="Fire" autocomplete="off">
+                                       <label class="btn btn-outline-primary " for="element-fire">Fire</label>
+                                       <input type="checkbox" class="btn-check filter-element"
+                                          id="element-water" value="Water" autocomplete="off">
+                                       <label class="btn btn-outline-primary " for="element-water">Water</label>
+                                       <input type="checkbox" class="btn-check filter-element"
+                                          id="element-earth" value="Earth" autocomplete="off">
+                                       <label class="btn btn-outline-primary " for="element-earth">Earth</label>
+                                       <input type="checkbox" class="btn-check filter-element"
+                                          id="element-wind" value="Wind" autocomplete="off">
+                                       <label class="btn btn-outline-primary " for="element-wind">Wind</label>
+                                       <input type="checkbox" class="btn-check filter-element"
+                                          id="element-light" value="Light" autocomplete="off">
+                                       <label class="btn btn-outline-primary " for="element-light">Light</label>
+                                       <input type="checkbox" class="btn-check filter-element"
+                                          id="element-dark" value="Dark" autocomplete="off">
+                                       <label class="btn btn-outline-primary " for="element-dark">Dark</label>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="modal-footer">
+                           <button type="button" class="btn btn-primary"
+                              data-bs-dismiss="modal">Close</button>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="modal fade" data-bs-backdrop="static" tabindex="-1"
+               id="tradeModal">
+               <div class="modal-dialog modal-dialog-centered modal-xl">
+                  <div class="modal-content">
+                     <div class="modal-header">
+                        <h3 class="modal-title">Trade</h3>
+                        <button type="button" class="btn btn-secondary"
+                           data-bs-dismiss="modal">Close</button>
+                     </div>
+                     <div class="modal-body">
+                        <div class="container-fluid">
+                           <div class="row" id="trade-teams">
+                              <div class="col-3">
+                                 <select data-trade-team="a"
+                                    class="form-select trade-teams-select">
+                                    <option value="0" selected disabled>Select Crew</option>
+                                 </select>
+                              </div>
+                              <div class="col-7"></div>
+                              <div class="col-3">
+                                 <select data-trade-team="b"
+                                    class="form-select trade-teams-select">
+                                    <option value="0" selected disabled>Select Crew</option>
+                                 </select>
+                              </div>
+                           </div>
+                           <div class="row">
+                              <div class="col-3">
+                                 <h6 class="d-flex flex-grow-1 justify-content-center">Assets</h6>
+                                 <div class="list-group trade-options" data-trade-team="a">
+                                 </div>
+                              </div>
+                              <div class="col-3">
+                                 <h6 class="d-flex flex-grow-1 justify-content-center">Offer</h6>
+                                 <div class="list-group trade-offers" data-trade-team="a">
+                                 </div>
+                              </div>
+                              <div
+                                 class="col-1 d-flex justify-content-center align-items-center">
+                                 <i class="bi-arrow-left-right"></i>
+                              </div>
+                              <div class="col-3">
+                                 <h6 class="d-flex flex-grow-1 justify-content-center">Offer</h6>
+                                 <div class="list-group trade-offers" data-trade-team="b">
+                                 </div>
+                              </div>
+                              <div class="col-3">
+                                 <h6 class="d-flex flex-grow-1 justify-content-center">Assets</h6>
+                                 <div class="list-group trade-options" data-trade-team="b">
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="row">
+                              <div class="col-13 d-flex justify-content-center">
+                                 <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox"
+                                       id="confirmTradeSwitch" disabled> <label
+                                       class="form-check-label" for="confirmTradeSwitch">Lock</label>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="resetTradeBtn">Reset</button>
+                        <button type="button" class="btn btn-warning" id="acceptTradeBtn"
+                           disabled>Execute</button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+          <footer class="draft-footer fw-bold d-flex justify-content-center">
+            <div> Granblue Fantasy content and materials are trademarks and copyrights of Cygames, Inc. or its licensors. All rights reserved.
+            </div>
+         </footer>
+         <div class="modal" tabindex="-1" data-bs-backdrop="static"
+            id="welcomeModal">
+            <div class="modal-dialog modal-dialog-centered">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title">Welcome to the Granblue Fantasy Draft</h5>
+                  </div>
+                  <div class="modal-body d-flex flex-column">
+                     <div class="progress mb-2" id="fetchProgress">
+                        <div class="progress-bar" style="width: 0%"></div>
+                     </div>
+                  </div>
+                  <div class="modal-footer">
+                     <button type="button" class="btn btn-primary" id="buildDraftBtn">Begin</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="modal" tabindex="-1" data-bs-backdrop="static"
+            id="teamsConfigModal">
+            <div class="modal-dialog modal-dialog-centered">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title">Crew Configuration</h5>
+                  </div>
+                  <div class="modal-body">
+                     <div class="container-fluid">
+                        <div class="row">
+                           <div class="col-12">
+                              <div class="input-group mb-2">
+                                 <label class="input-group-text" for="teamNameInput">Crew</label>
+                                 <input type="text" class="form-control"
+                                    placeholder="Enter Name..." maxlength="16"
+                                    aria-label="Crew's name" id="team-name-input">
+                                 <button class="btn btn-secondary" type="button" disabled
+                                    id="teamNameBtn">Enter</button>
+                                 <div
+                                    class="invalid-feedback d-block flex-grow-1 justify-content-center">
+                                    Minimum of 2 crews required. Cannot exceed more than 10.
+                                 </div>
+                              </div>
+                              <div id="team-list-wrapper">
+                                 <div id="team-list"
+                                    class="d-flex justify-content-start align-items-start flex-wrap"></div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="modal-footer">
+                     <button type="button" class="btn btn-primary" id="acceptTeamsBtn"
+                        disabled>Next</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="modal" tabindex="-1" data-bs-backdrop="static"
+            id="draftConfigModal">
+            <div
+               class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title">Draft Configuration</h5>
+                  </div>
+                  <div class="modal-body">
+                     <div class="container-fluid">
+                        <div class="row">
+                           <div class="col-5">
+                              <h5 class="d-flex justify-content-center">Assign Order</h5>
+                           </div>
+                        </div>
+                        <div class="row" id="roundSettings">
+                           <div class="col-5 justify-content-center">
+                              <ol class="list-group list-group-numbered" id="teamOrderSetup">
+                              </ol>
+                           </div>
+                           <div class="col-7 d-flex flex-column">
+                              <div class="d-flex flex-column">
+                                 <h6 class="d-flex justify-content-center">Controls</h6>
+                                 <div class="d-flex justify-content-evenly align-items-center">
+                                    <div>
+                                       <button type="button" class="btn btn-secondary"
+                                          id="executeLottoBtn">Run Lottery</button>
+                                    </div>
+                                    <div class="d-flex">
+                                       <div class="form-check form-switch"
+                                          title="Toggles between Super Lottery mode. If enabled, the draft order will be completely random with each crew being guaranteed one pick per round.">
+                                          <input class="form-check-input" type="checkbox"
+                                             role="switch" id="superLotteryTgl" /> <label
+                                             class="form-check-label fw-bold" for="superLotteryTgl">Super
+                                          Lottery</label>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div
+                                 class="d-flex flex-column flex-grow-1 justify-content-center">
+                                 <h6 class="d-flex justify-content-center">Select Rounds</h6>
+                                 <div class="d-flex justify-content-center mb-2">
+                                    <div>
+                                       <div class="input-group"
+                                          title="Select total number of rounds. The maximum and minimum number of rounds is 30 and 5 respectively. But the total can vary depending on if Character Restriction mode is eanbled and the number of crews. The controls below can be used to calculate the best possible number of rounds for specialized drafts, but with the exception of the Character Restriction toggle, does not affect the selection process otherwise.">
+                                          <span class="input-group-text">Rounds</span> <select
+                                             class="form-select" id="totalRoundsSelect">
+                                          </select>
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <div class="d-flex justify-content-evenly mb-2">
+                                    <div class="d-flex align-items-center">
+                                       <div class="form-check form-switch">
+                                          <input class="form-check-input" type="checkbox"
+                                             role="switch" id="rndExclCollabsSwtch" /> <label
+                                             class="form-check-label" for="rndExclCollabsSwtch">Exclude
+                                          Collabs.</label>
+                                       </div>
+                                    </div>
+                                    <div class="d-flex">
+                                       <div class="form-check form-switch"
+                                          title="Toggle between Character Restriction Mode. If enabled, only one single single version of a character may be selected by a crew. Units that consists of multiple characters (.i.e. Aliza & Stan, Dorothy & Claudia, etc.) will be restricted by default.">
+                                          <input class="form-check-input" type="checkbox"
+                                             role="switch" id="restrictVerSwitch" /> <label
+                                             class="form-check-label fw-bold" for="restrictVerSwitch">Restrict
+                                          Versions</label>
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <div class="mb-2 d-flex justify-content-evenly">
+                                    <div>
+                                       <div class="btn-group btn-group-sm" role="group"
+                                          aria-label="Calculate Rounds by Element" id="roundsRarities">
+                                          <input type="checkbox" class="btn-check" value="R"
+                                             autocomplete="off" id="rndRarityR"> <label
+                                             class="btn btn-outline-secondary" for="rndRarityR">R</label>
+                                          <input type="checkbox" class="btn-check" value="SR"
+                                             autocomplete="off" id="rndRaritySr"> <label
+                                             class="btn btn-outline-secondary" for="rndRaritySr">SR</label>
+                                          <input type="checkbox" class="btn-check" value="SSR"
+                                             autocomplete="off" id="rndRaritySsr"> <label
+                                             class="btn btn-outline-secondary" for="rndRaritySsr">SSR</label>
+                                       </div>
+                                    </div>
+                                    <div>
+                                       <div class="btn-group btn-group-sm" role="group"
+                                          aria-label="Calculate Rounds by Element" id="roundsGenders">
+                                          <input type="checkbox" class="btn-check" value="m"
+                                             autocomplete="off" id="rndGenderM"> <label
+                                             class="btn btn-outline-secondary" for="rndGenderM">Male</label>
+                                          <input type="checkbox" class="btn-check" value="f"
+                                             autocomplete="off" id="rndGenderF"> <label
+                                             class="btn btn-outline-secondary" for="rndGenderF">Female</label>
+                                          <input type="checkbox" class="btn-check" value="o"
+                                             autocomplete="off" id="rndGenderO"> <label
+                                             class="btn btn-outline-secondary" for="rndGenderO">Other</label>
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <div>
+                                    <div class="d-flex flex-grow-1 justify-content-center">
+                                       <div class="btn-group btn-group-sm" role="group"
+                                          aria-label="Calculate Rounds by Element" id="roundsElement">
+                                          <input type="checkbox" class="btn-check" value="Fire"
+                                             autocomplete="off" id="rndElementFire"> <label
+                                             class="btn btn-outline-secondary" for="rndElementFire">Fire</label>
+                                          <input type="checkbox" class="btn-check" value="Water"
+                                             autocomplete="off" id="rndElementWater"> <label
+                                             class="btn btn-outline-secondary" for="rndElementWater">Water</label>
+                                          <input type="checkbox" class="btn-check" value="Earth"
+                                             autocomplete="off" id="rndElementEarth"> <label
+                                             class="btn btn-outline-secondary" for="rndElementEarth">Earth</label>
+                                          <input type="checkbox" class="btn-check" value="Wind"
+                                             autocomplete="off" id="rndElementWind"> <label
+                                             class="btn btn-outline-secondary" for="rndElementWind">Wind</label>
+                                          <input type="checkbox" class="btn-check" value="Light"
+                                             autocomplete="off" id="rndElementLight"> <label
+                                             class="btn btn-outline-secondary" for="rndElementLight">Light</label>
+                                          <input type="checkbox" class="btn-check" value="Dark"
+                                             autocomplete="off" id="rndElementDark"> <label
+                                             class="btn btn-outline-secondary" for="rndElementDark">Dark</label>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="modal-footer justify-content-between">
+                     <button type="button" class="btn btn-primary"
+                        id="configureTeamsBtn">Back</button>
+                     <button type="button" class="btn btn-primary" id="startDraftBtn">Start</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="modal fade " tabindex="-1" id="resetDraftModal">
+            <div class="modal-dialog modal-dialog-centered">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h3 class="modal-title">Reset</h3>
+                  </div>
+                  <div class="modal-body">
+                     <div class="font-monospace mb-1">Are you certain you want to
+                        reset the draft? All current progress will be lost.
+                     </div>
+                     <div class="text-center">
+                        <input class="form-check-input" type="checkbox"
+                           id="confirmResetConfigs"> <label
+                           class="form-check-label" for="confirmResetConfigs">
+                        Reset Configurations </label>
+                     </div>
+                  </div>
+                  <div class="modal-footer">
+                     <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">Cancel</button>
+                     <button type="button" class="btn btn-primary"
+                        data-bs-dismiss="modal" id="confirmResetBtn">Confirm</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </body>
+</html>
