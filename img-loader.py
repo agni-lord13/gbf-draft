@@ -59,11 +59,12 @@ while offset < total_chars:
 		char_data = result['title']
 		char_id = char_data['id']
 		img_path = os.path.join(img_directory, char_id + '_icon.jpg')
-		print(img_path)
+		
 		
 		if os.path.isfile(img_path):
-			print(img_path + ' exists')
+			print(img_path + ' already exists...skipping')
 		else:
+			print(img_path + '... retrieving...')
 		    url = 'http://game-a.granbluefantasy.jp/assets_en/img_mid/sp/assets/npc/m/' + char_id + '_01.jpg'
 		    response = requests.get(url)
 		    
