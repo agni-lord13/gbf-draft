@@ -87,6 +87,7 @@ $header-font-size: 1.5em;
 #draft-pool {
   width: 60%;
   background-color: lightgray;
+  --chars-per-row: 8;
 }
 
 .round-header {
@@ -378,3 +379,25 @@ $trade-color: pink;
 .btn-check:not(:checked) + .btn-outline-primary:focus {
   box-shadow: inherit !important; /* Properly reset btn-check box shadow on desktop. */
 }
+
+@mixin selectRow($pWidth, $pLength, $pFontSize: 0) {
+  @media only screen and (max-width: $pWidth + px) {
+    #draft-selections .character-select {
+      width: percentage($pLength/100);
+    }
+
+    #draft-pool {
+      $charsPerRow: floor(100 / $pLength);
+      --chars-per-row: #{$charsPerRow};
+    }
+
+    @if $pFontSize != 0 {
+      #draft-search-filter {
+        font-size: $pFontSize;
+      }
+    }
+  }
+}
+
+@include selectRow(1920, 12);
+@include selectRow(1100, 15, 0.9em);

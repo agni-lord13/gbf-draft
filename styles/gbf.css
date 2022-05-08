@@ -23,7 +23,7 @@ body {
 #draft-control {
   box-sizing: border-box;
   flex-grow: 1;
-  min-height: 90%;
+  min-height: 85%;
 }
 
 .draft-footer {
@@ -76,6 +76,7 @@ body {
 #draft-pool {
   width: 60%;
   background-color: lightgray;
+  --chars-per-row: 8;
 }
 
 .round-header {
@@ -342,4 +343,27 @@ body {
 .btn-check:not(:checked) + .btn-outline-primary:focus {
   box-shadow: inherit !important;
   /* Properly reset btn-check box shadow on desktop. */
+}
+
+@media only screen and (max-width: 1920px) {
+  #draft-selections .character-select {
+    width: 12%;
+  }
+
+  #draft-pool {
+    --chars-per-row: 8;
+  }
+}
+@media only screen and (max-width: 1100px) {
+  #draft-selections .character-select {
+    width: 15%;
+  }
+
+  #draft-pool {
+    --chars-per-row: 6;
+  }
+
+  #draft-search-filter {
+    font-size: 0.9em;
+  }
 }

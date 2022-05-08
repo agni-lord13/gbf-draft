@@ -18,6 +18,8 @@ var totalRounds = 5;
 const calItemsPerRow = 8;
 
 $(function () {
+//	let width = $(window).width();
+//	console.log(width);
   $("#welcomeModal").modal("show");
 
   $("#buildDraftBtn").click(function () {
@@ -84,6 +86,7 @@ $(function () {
         });
       })
       .done(() => {
+    	  
         for (let i = 0; i < calItemsPerRow; i++) {
           $("#draft-selections").append(createSelectionPlaceholder(i));
         }
@@ -535,6 +538,7 @@ $(function () {
       
       logEvent(teams.get(receiveTeam).name + " receives [" + logTrade.join(", ") + "]");
     });
+    
 
     refreshTradeOptions();
     updatePickDisplay(currentPick, true);
@@ -561,6 +565,10 @@ $(function () {
     } else {
       cleanDraft();
     }
+  });
+  
+  $(window).resize(() => {
+  	updatePlaceholders();
   });
 });
 
@@ -839,8 +847,12 @@ function createSelectionView(pTitle, pCharacter, pPlaceholder, pImg) {
 function updatePlaceholders() {
   let availableCount = $(".character-select:not([data-placeholder]):visible")
     .length;
+  
+  let charsPerRow = $("#draft-pool").css("--chars-per-row");
+  
+  console.log("Chars Per Row: " + charsPerRow);
 
-  let toHide = availableCount % calItemsPerRow;
+  let toHide = availableCount % charsPerRow;
 
   if (toHide === 0) {
     toHide = calItemsPerRow;

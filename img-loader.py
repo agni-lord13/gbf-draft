@@ -24,8 +24,8 @@ if not os.path.exists(img_directory):
 limit = 500
 
 request = retrieveData(
-	url = 'https://gbf.wiki/api.php',
-	params = {
+	pUrl = 'https://gbf.wiki/api.php',
+	pParams = {
 	'action': 'cargoquery',
 	'tables': 'characters',
 	'fields': 'COUNT(characters.id)=total',
@@ -43,8 +43,8 @@ offset = 0
 
 while offset < total_chars:
 	request = retrieveData(
-		url = 'https://gbf.wiki/api.php',
-		params = {
+		pUrl = 'https://gbf.wiki/api.php',
+		pParams = {
 			'action': 'cargoquery',
 			'tables': 'characters',
 			'fields': 'id, _pageTitle = name',
