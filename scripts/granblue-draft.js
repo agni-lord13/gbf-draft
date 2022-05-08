@@ -707,7 +707,7 @@ function buildPickView(pOrder, pTeamData, pTotalTeams) {
     "<div class='d-flex flex-grow-1 team'>" +
     pTeamData.name +
     "</div>" +
-    "<div class='d-flex flex-grow-0 char-select'>" +
+    "<div class='d-flex flex-grow-0 flex-shrink-0 char-select'>" +
     "<img src='" +
     IMG_PLACEHOLDER +
     "'>" +

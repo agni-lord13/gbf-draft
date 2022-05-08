@@ -167,7 +167,7 @@ $header-font-size: 1.5em;
       left: 50%;
       transform: translate(-50%, -50%);
       user-select: none;
-      font-size: 0.8vw;
+      font-size: 1em;
     }
   }
 
@@ -234,7 +234,7 @@ $draft-search-filter-size: 10%;
 
     .selection-info {
       font-weight: bold;
-      font-size: 0.8vw;
+      font-size: 1em;
       color: white;
       position: absolute;
       top: 50%;
@@ -380,16 +380,30 @@ $trade-color: pink;
   box-shadow: inherit !important; /* Properly reset btn-check box shadow on desktop. */
 }
 
-@mixin selectRow($pWidth, $pLength, $pFontSize: 0) {
+@mixin selectRow($pWidth, $pCharSelectLength, $pSelectionInfoSize, $pPickViewLength, $pFontSize: 0) {
   @media only screen and (max-width: $pWidth + px) {
     #draft-selections .character-select {
-      width: percentage($pLength/100);
+      width: percentage($pCharSelectLength/100);
+      
+      .selection-info {
+      	font-size: $pSelectionInfoSize;
+      }
     }
-
+    
     #draft-pool {
-      $charsPerRow: floor(100 / $pLength);
+      $charsPerRow: floor(100 / $pCharSelectLength);
       --chars-per-row: #{$charsPerRow};
     }
+
+    .pick-view .char-select {
+      width: percentage($pPickViewLength / 100);
+      
+      .selection-info {
+      	font-size: $pSelectionInfoSize;
+      }
+    }
+    
+    
 
     @if $pFontSize != 0 {
       #draft-search-filter {
@@ -399,5 +413,5 @@ $trade-color: pink;
   }
 }
 
-@include selectRow(1920, 12);
-@include selectRow(1100, 15, 0.9em);
+@include selectRow(1920, 12, 1em, 32);
+@include selectRow(1100, 16, .8em, 38, 0.8em);

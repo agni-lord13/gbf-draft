@@ -140,7 +140,7 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   user-select: none;
-  font-size: 0.8vw;
+  font-size: 1em;
 }
 .pick-view[data-char-select] img {
   visibility: visible;
@@ -192,7 +192,7 @@ body {
 }
 #draft-selections .character-select .selection-info {
   font-weight: bold;
-  font-size: 0.8vw;
+  font-size: 1em;
   color: white;
   position: absolute;
   top: 50%;
@@ -349,21 +349,41 @@ body {
   #draft-selections .character-select {
     width: 12%;
   }
+  #draft-selections .character-select .selection-info {
+    font-size: 1em;
+  }
 
   #draft-pool {
     --chars-per-row: 8;
   }
+
+  .pick-view .char-select {
+    width: 32%;
+  }
+  .pick-view .char-select .selection-info {
+    font-size: 1em;
+  }
 }
 @media only screen and (max-width: 1100px) {
   #draft-selections .character-select {
-    width: 15%;
+    width: 16%;
+  }
+  #draft-selections .character-select .selection-info {
+    font-size: 0.8em;
   }
 
   #draft-pool {
     --chars-per-row: 6;
   }
 
+  .pick-view .char-select {
+    width: 38%;
+  }
+  .pick-view .char-select .selection-info {
+    font-size: 0.8em;
+  }
+
   #draft-search-filter {
-    font-size: 0.9em;
+    font-size: 0.8em;
   }
 }
