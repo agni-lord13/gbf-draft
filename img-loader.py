@@ -65,13 +65,13 @@ while offset < total_chars:
 			print(img_path + ' already exists...skipping')
 		else:
 			print(img_path + '... retrieving...')
-		    url = 'http://game-a.granbluefantasy.jp/assets_en/img_mid/sp/assets/npc/m/' + char_id + '_01.jpg'
-		    response = requests.get(url)
+			url = 'http://game-a.granbluefantasy.jp/assets_en/img_mid/sp/assets/npc/m/' + char_id + '_01.jpg'
+			response = requests.get(url)
 		    
-		    if response.ok:
-		    	with open(img_path, "wb") as image_file:
-		    		image_file.write(response.content)
-		    else:
-		    	print('Failed to load ' + url)
+			if response.ok:
+				with open(img_path, "wb") as image_file:
+					image_file.write(response.content)
+			else:
+				print('Failed to load ' + url)
 		
 	offset += limit
